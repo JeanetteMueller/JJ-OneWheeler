@@ -13,10 +13,10 @@ volatile int16_t count = 0;
 4. Repeat the above steps by fine tuning each parameter to achieve the best result.
 */
 
-#define Kp 3.5
-#define Kd 0.13
-#define Ki 20.0
-#define sampleTime 0.001
+#define Kp 1.5
+#define Kd 0
+#define Ki 5.0
+#define sampleTime 0.005
 #define targetAngle 0
 
 void setupGyro() {

@@ -39,11 +39,20 @@ void loop() {
     previousMillis_100 = 0;
   }
 
+  if (currentMillis < previousMillis_gyro) {
+    previousMillis_gyro = 0;
+  }
+
   initLoopDrive();
 
   loadRemoteValues();
 
-  loopGyro();
+  if (currentMillis - previousMillis_gyro >= 1) {
+    previousMillis_gyro = currentMillis;
+
+    loopGyro();
+  }
+  
 
   loopDrive();
   updateDriveSpeed();
