@@ -7,7 +7,8 @@ unsigned long previousMillis_100 = 0;
 unsigned long previousMillis_gyro = 0;
 
 //Gyro
-MPU6050 mpu;
+MPU6050 mpu(0x68); // <-- use for AD0 high
+int16_t targetAngle = 0;
 
 //Head Servo
 uint8_t headServoPin = 3;

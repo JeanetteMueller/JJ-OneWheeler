@@ -13,21 +13,23 @@ volatile int16_t count = 0;
 4. Repeat the above steps by fine tuning each parameter to achieve the best result.
 */
 
-#define Kp 1.5
+#define Kp 8 //1.5
 #define Kd 0
-#define Ki 5.0
+#define Ki 1.5 // 5.0
 #define sampleTime 0.005
-#define targetAngle 0
+
 
 void setupGyro() {
   mpu.initialize();
 
-  // mpu.setXAccelOffset(-3972);
-  mpu.setYAccelOffset(-3481);
-  mpu.setZAccelOffset(1487);
-  // mpu.setXGyroOffset(124);
-  mpu.setYGyroOffset(84);
-  // mpu.setZGyroOffset(40);
+  //-3981	-3876	1688	121	87	37
+
+  // mpu.setXAccelOffset(-3981);
+  mpu.setYAccelOffset(-3876);
+  mpu.setZAccelOffset(1688);
+  // mpu.setXGyroOffset(120);
+  mpu.setYGyroOffset(87);
+  // mpu.setZGyroOffset(37);
 }
 
 void loopGyro() {
@@ -50,10 +52,10 @@ void loopGyro() {
 
   int16_t minValue = 20; //value 0-x is not powerfull enough to rotate so this is the minimum value
 
-  if (motorPower > 10) {
-    motorPower = map(motorPower, 10, 255, minValue, 255);
-  } else if (motorPower < -10) {
-    motorPower = map(motorPower, 10, -255, -(minValue), -255);
+  if (motorPower > 2) {
+    motorPower = map(motorPower, 2, 255, minValue, 255);
+  } else if (motorPower < -2) {
+    motorPower = map(motorPower, -2, -255, -(minValue), -255);
   }else{
     motorPower = 0;
   }

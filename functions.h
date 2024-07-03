@@ -4,8 +4,6 @@ void loadRemoteValues() {
       //Serial.print(F("GOT REMOTE DATA"));
     }
 
-    
-
     ibusVar00 = IBus.readChannel(0);  // Steer
     ibusVar01 = IBus.readChannel(1);  // Drive
     ibusVar02 = IBus.readChannel(2);  //

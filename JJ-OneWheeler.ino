@@ -17,17 +17,12 @@
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(SERIAL_PORT_SPEED);  //Used only for debugging on arduino serial monitor
-  Serial.println(F("JJ Arduino Code! v1.0"));
-
-  // Wire.begin();
-  // Wire.setClock(400000);
+  Serial.println("JJ Arduino Code! v1.0");
 
   IBus.begin(Serial);
 
   setupGyro();
-
   setupDrive();
-
   setupHeadServo();
 }
 
@@ -47,28 +42,27 @@ void loop() {
 
   loadRemoteValues();
 
-  if (currentMillis - previousMillis_gyro >= 1) {
-    previousMillis_gyro = currentMillis;
+  // debug();
+
+  // // if ((micros() - lastMicros) / 1e6 >= 5) {
+  // //   lastMicros = micros();
+
+  // //   loopGyro();
+  // // }
+
+  // if (currentMillis - previousMillis_gyro >= 1) {
+  //   previousMillis_gyro = currentMillis;
 
     loopGyro();
-  }
+  // }
   
 
   loopDrive();
   updateDriveSpeed();
 
-  //debug();
-
   if (currentMillis - previousMillis_100 >= 100) {
     previousMillis_100 = currentMillis;
-
-    Serial.print(" Left ");
-    Serial.print(leftMotorSpeedTarget);
-
-    Serial.print(" Right ");
-    Serial.println(rightMotorSpeedTarget);
-
+    
     loopHeadServo();
   }
-
 }
