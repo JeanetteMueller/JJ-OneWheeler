@@ -1,14 +1,10 @@
-#include "Arduino.h"
-#include <IBusBM.h>
-#include <CytronMotorDriver.h>
+
 
 #include "Wire.h"
-#include "I2Cdev.h"
-#include "MPU6050.h"
 #include "math.h"
 
 #include "definitions.h"
-#include "functions.h"
+#include "input.h"
 #include "gyro.h"
 #include "debug.h"
 #include "drive.h"
@@ -19,15 +15,17 @@ void setup() {
   Serial.begin(SERIAL_PORT_SPEED);  //Used only for debugging on arduino serial monitor
   Serial.println("JJ Arduino Code! v1.0");
 
-  IBus.begin(Serial);
+  // join I2C bus (I2Cdev library doesn't do this automatically)
+  Wire.begin();
 
+  setupInput();
   setupGyro();
   setupDrive();
   setupHeadServo();
 }
 
 void loop() {
-
+  // Serial.println("loop start--------------------------");
   currentMillis = millis();
 
   if (currentMillis < previousMillis_100) {
@@ -40,18 +38,24 @@ void loop() {
 
   initLoopDrive();
 
-  loadRemoteValues();
+  loopInput();
 
   loopDrive();
 
   // debug();
 
-  loopGyro();
-  updateDriveSpeed();
+  if (currentMillis - previousMillis_gyro >= 2) {
+    previousMillis_gyro = currentMillis;
+
+    loopGyro();
+    updateDriveSpeed();
+  }
 
   if (currentMillis - previousMillis_100 >= 100) {
     previousMillis_100 = currentMillis;
 
     loopHeadServo();
   }
+
+  // Serial.println("loop end--------------------------");
 }

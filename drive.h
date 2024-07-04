@@ -1,5 +1,8 @@
 
 void setupDrive() {
+
+  analogWriteFreq(18000);
+
   motor_L.setSpeed(0);
   motor_R.setSpeed(0);
 }
@@ -17,20 +20,23 @@ void loopDrive() {
 
   int16_t maxSpeedValue = 255;
 
-  if (driveValueVertical < centerPoint - deadPoint || driveValueVertical > centerPoint + deadPoint) {
-    joystickY = map(driveValueVertical, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
+  if (driveValueVertical >= minValue && driveValueVertical <= maxValue) {
 
-    leftMotorSpeedTarget += joystickY;
-    rightMotorSpeedTarget += joystickY;
+    if (driveValueVertical < centerPoint - deadPoint || driveValueVertical > centerPoint + deadPoint) {
+      joystickY = map(driveValueVertical, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
+
+      leftMotorSpeedTarget += joystickY;
+      rightMotorSpeedTarget += joystickY;
+    }
   }
+  if (driveValueHorizontal >= minValue && driveValueHorizontal <= maxValue) {
+    if (driveValueHorizontal < centerPoint - deadPoint || driveValueHorizontal > centerPoint + deadPoint) {
+      joystickX = map(driveValueHorizontal, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
 
-  if (driveValueHorizontal < centerPoint - deadPoint || driveValueHorizontal > centerPoint + deadPoint) {
-    joystickX = map(driveValueHorizontal, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
-
-    leftMotorSpeedTarget += joystickX;
-    rightMotorSpeedTarget -= joystickX;
+      leftMotorSpeedTarget += joystickX;
+      rightMotorSpeedTarget -= joystickX;
+    }
   }
-
   leftMotorSpeedTarget = constrain(leftMotorSpeedTarget, -255, 255);
   rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -255, 255);
 }

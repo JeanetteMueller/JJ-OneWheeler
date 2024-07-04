@@ -1,43 +1,43 @@
-#include <PWMServo.h>
-PWMServo headServo;
+// #include <PWMServo.h>
+// PWMServo headServo;
 
-uint8_t servoPosition = 0;
-bool direction = true;
-uint8_t stepSize = 5;
+// uint8_t servoPosition = 0;
+// bool direction = true;
+// uint8_t stepSize = 5;
 
 void setupHeadServo(){
-  headServo.attach(headServoPin);
+//   headServo.attach(headServoPin);
 }
 
 void loopHeadServo(){
   
-  servoPosition = map(headServoTarget, 1000, 2000, 0, 180);
+//   servoPosition = map(headServoTarget, 1000, 2000, 0, 180);
 
-  servoPosition = constrain(servoPosition, 0, 180);
+//   servoPosition = constrain(servoPosition, 0, 180);
 
-  // Serial.print(F(" Head Servo: "));
-  // Serial.println(servoPosition);
+//   // Serial.print(F(" Head Servo: "));
+//   // Serial.println(servoPosition);
 
-  headServo.write(servoPosition);
+//   headServo.write(servoPosition);
 
 }
-void loopHeadServo_Automation(){
+// void loopHeadServo_Automation(){
   
-  if (direction == true){
-    servoPosition = servoPosition + stepSize;
-  }else{
-    servoPosition = servoPosition - stepSize;
-  }
+//   if (direction == true){
+//     servoPosition = servoPosition + stepSize;
+//   }else{
+//     servoPosition = servoPosition - stepSize;
+//   }
 
-  if (servoPosition > 180) {
-    direction = false;
+//   if (servoPosition > 180) {
+//     direction = false;
     
-  }else if (servoPosition < 0){
-    direction = true;
-  }
+//   }else if (servoPosition < 0){
+//     direction = true;
+//   }
 
-  // Serial.print(F(" Head Servo: "));
-  // Serial.println(servoPosition);
+//   // Serial.print(F(" Head Servo: "));
+//   // Serial.println(servoPosition);
 
-  headServo.write(servoPosition);
-}
+//   headServo.write(servoPosition);
+// }
