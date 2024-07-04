@@ -42,27 +42,16 @@ void loop() {
 
   loadRemoteValues();
 
+  loopDrive();
+
   // debug();
 
-  // // if ((micros() - lastMicros) / 1e6 >= 5) {
-  // //   lastMicros = micros();
-
-  // //   loopGyro();
-  // // }
-
-  // if (currentMillis - previousMillis_gyro >= 1) {
-  //   previousMillis_gyro = currentMillis;
-
-    loopGyro();
-  // }
-  
-
-  loopDrive();
+  loopGyro();
   updateDriveSpeed();
 
   if (currentMillis - previousMillis_100 >= 100) {
     previousMillis_100 = currentMillis;
-    
+
     loopHeadServo();
   }
 }

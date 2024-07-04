@@ -6,6 +6,9 @@ volatile int16_t gyroRate;
 volatile float accAngle, gyroAngle, currentAngle, prevAngle = 0, error, prevError = 0, errorSum = 0;
 volatile int16_t count = 0;
 
+float sampleTime;
+unsigned long lastMicros = 0;
+
 /*
 1. Set Ki and Kd to zero and gradually increase Kp so that the robot starts to oscillate about the zero position.
 2. Increase Ki so that the response of the robot is faster when it is out of balance. Ki should be large enough so that the angle of inclination does not increase. The robot should come back to zero position if it is inclined.
@@ -13,11 +16,13 @@ volatile int16_t count = 0;
 4. Repeat the above steps by fine tuning each parameter to achieve the best result.
 */
 
-#define Kp 8 //1.5
-#define Kd 0
-#define Ki 1.5 // 5.0
-#define sampleTime 0.005
+// #define Kp 8 //1.5
+// #define Kd 0
+// #define Ki 1.5 // 5.0
 
+#define Kp 3 //1.5
+#define Kd 0
+#define Ki 0 // 5.0
 
 void setupGyro() {
   mpu.initialize();
@@ -33,6 +38,17 @@ void setupGyro() {
 }
 
 void loopGyro() {
+
+  unsigned long us = micros();
+  unsigned long timediffUS;
+  if (us < lastMicros) {
+    timediffUS = (ULONG_MAX - lastMicros) + us;
+  } else {
+    timediffUS = us - lastMicros;
+  }
+  lastMicros = us;
+  sampleTime = timeDiffUS / 1000000.0;
+
   accY = mpu.getAccelerationY();
   accZ = mpu.getAccelerationZ();
   gyroX = mpu.getRotationY();
@@ -62,6 +78,6 @@ void loopGyro() {
 
   prevAngle = currentAngle;
 
-  leftMotorSpeedTarget = -(motorPower);
-  rightMotorSpeedTarget = -(motorPower);
+  leftMotorSpeedTarget += -(motorPower);
+  rightMotorSpeedTarget += -(motorPower);
 }

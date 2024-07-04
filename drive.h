@@ -10,26 +10,29 @@ void initLoopDrive() {
 }
 
 void loopDrive() {
-  // uint16_t deadPoint = 5;
-  // uint16_t minValue = 1000;
-  // uint16_t maxValue = 2000;
-  // uint16_t centerPoint = 1500;
+  uint16_t deadPoint = 5;
+  uint16_t minValue = 1000;
+  uint16_t maxValue = 2000;
+  uint16_t centerPoint = 1500;
 
-  // int16_t maxSpeedValue = 150;
+  int16_t maxSpeedValue = 255;
 
-  // if (driveValueVertical < centerPoint - deadPoint || driveValueVertical > centerPoint + deadPoint) {
-  //   joystickY = map(driveValueVertical, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
+  if (driveValueVertical < centerPoint - deadPoint || driveValueVertical > centerPoint + deadPoint) {
+    joystickY = map(driveValueVertical, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
 
-  //   leftMotorSpeedTarget += joystickY;
-  //   rightMotorSpeedTarget += joystickY;
-  // }
+    leftMotorSpeedTarget += joystickY;
+    rightMotorSpeedTarget += joystickY;
+  }
 
-  // if (driveValueHorizontal < centerPoint - deadPoint || driveValueHorizontal > centerPoint + deadPoint) {
-  //   joystickX = map(driveValueHorizontal, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
+  if (driveValueHorizontal < centerPoint - deadPoint || driveValueHorizontal > centerPoint + deadPoint) {
+    joystickX = map(driveValueHorizontal, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
 
-  //   leftMotorSpeedTarget += joystickX;
-  //   rightMotorSpeedTarget -= joystickX;
-  // }
+    leftMotorSpeedTarget += joystickX;
+    rightMotorSpeedTarget -= joystickX;
+  }
+
+  leftMotorSpeedTarget = constrain(leftMotorSpeedTarget, -255, 255);
+  rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -255, 255);
 }
 
 void updateDriveSpeed() {
