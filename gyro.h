@@ -21,9 +21,9 @@ unsigned long lastMicros = 0;
 // #define Kd 0
 // #define Ki 1.5 // 5.0
 
-#define Kp 3.5  //1.5
+#define Kp 5.0  //1.5
 #define Kd 0
-#define Ki 0  // 5.0
+#define Ki 0.02  // 5.0
 
 void setupGyro() {
   mpu.initialize();

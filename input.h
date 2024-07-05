@@ -35,6 +35,6 @@ void loopInput() {
     driveValueHorizontal = ibusVar00;
     driveValueVertical = ibusVar01;
 
-    headServoTarget = ibusVar02;
+    headServoTarget = ibusVar01;
   }
 }

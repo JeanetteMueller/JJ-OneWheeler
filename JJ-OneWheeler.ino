@@ -49,12 +49,14 @@ void loop() {
 
     loopGyro();
     updateDriveSpeed();
+
+    loopHeadServo();
   }
 
   if (currentMillis - previousMillis_100 >= 100) {
     previousMillis_100 = currentMillis;
 
-    loopHeadServo();
+    
   }
 
   // Serial.println("loop end--------------------------");

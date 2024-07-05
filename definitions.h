@@ -13,8 +13,8 @@ MPU6050 mpu(0x68);  // <-- use for AD0 high
 int16_t targetAngle = 0;
 
 // Head Servo
-uint8_t headServoPin = 3;
-int16_t headServoTarget = 1500;
+uint8_t headServoPin = 13;
+int16_t headServoTarget = 0;
 
 // RC Reviever
 #include <IBusBM.h>
