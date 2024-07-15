@@ -1,5 +1,4 @@
 
-
 #include "Wire.h"
 #include "math.h"
 
@@ -32,6 +31,12 @@ void loop() {
     previousMillis_100 = 0;
   }
 
+  if (currentMillis < previousMillis_headServo) {
+    previousMillis_headServo = 0;
+  }
+
+  
+
   if (currentMillis < previousMillis_gyro) {
     previousMillis_gyro = 0;
   }
@@ -49,6 +54,10 @@ void loop() {
 
     loopGyro();
     updateDriveSpeed();
+  }
+
+  if (currentMillis - previousMillis_headServo >= 20) {
+    previousMillis_headServo = currentMillis;
 
     loopHeadServo();
   }
@@ -56,7 +65,6 @@ void loop() {
   if (currentMillis - previousMillis_100 >= 100) {
     previousMillis_100 = currentMillis;
 
-    
   }
 
   // Serial.println("loop end--------------------------");

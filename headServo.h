@@ -1,23 +1,20 @@
 #include "core_esp8266_features.h"
-#include <Servo.h>
 
+#include <Servo.h>
 Servo headServo;
 
+
 uint16_t servoPosition = 0;
-// bool direction = true;
-// uint8_t stepSize = 5;
 
 uint16_t minHeadServo = 0;
-uint16_t maxHeadServo = 190;
-
-int16_t usedRange = 100;
+uint16_t maxHeadServo = 199;
+int16_t usedRange = 300;
 
 void setupHeadServo() {
-  headServo.attach(headServoPin);
+  headServo.attach(headServoPin, 500, 2500, ((maxHeadServo - minHeadServo) / 2) + minHeadServo );
 }
 
 void loopHeadServo() {
-
   if (headServoTarget != 0) {
 
     if (headServoTarget <= 1500+usedRange && headServoTarget >= 1500-usedRange) {
@@ -31,11 +28,11 @@ void loopHeadServo() {
 
     servoPosition = constrain(servoPosition, minHeadServo, maxHeadServo);
 
-    // Serial.print(F(" headServoTarget: "));
-    // Serial.print(headServoTarget);
+    Serial.print(F(" headServoTarget: "));
+    Serial.print(headServoTarget);
 
-    // Serial.print(F("     Head Servo: "));
-    // Serial.println(servoPosition);
+    Serial.print(F("     Head Servo: "));
+    Serial.println(servoPosition);
 
     headServo.write(servoPosition);
 
@@ -43,23 +40,3 @@ void loopHeadServo() {
     headServo.write(((maxHeadServo - minHeadServo) / 2) + minHeadServo);
   }
 }
-// void loopHeadServo_Automation(){
-
-//   if (direction == true){
-//     servoPosition = servoPosition + stepSize;
-//   }else{
-//     servoPosition = servoPosition - stepSize;
-//   }
-
-//   if (servoPosition > 180) {
-//     direction = false;
-
-//   }else if (servoPosition < 0){
-//     direction = true;
-//   }
-
-//   // Serial.print(F(" Head Servo: "));
-//   // Serial.println(servoPosition);
-
-//   headServo.write(servoPosition);
-// }

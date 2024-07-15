@@ -4,6 +4,7 @@
 // TIME
 unsigned long currentMillis;  // time current
 unsigned long previousMillis_100 = 0;
+unsigned long previousMillis_headServo = 0;
 unsigned long previousMillis_gyro = 0;
 
 // Gyro

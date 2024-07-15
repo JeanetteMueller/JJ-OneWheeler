@@ -46,12 +46,12 @@ void updateDriveSpeed() {
   leftMotorSpeedTarget = constrain(leftMotorSpeedTarget, -255, 255);
   rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -255, 255);
 
-  Serial.print("Motors: ");
-  Serial.print(" Left ");
-  Serial.print(leftMotorSpeedTarget);
+  // Serial.print("Motors: ");
+  // Serial.print(" Left ");
+  // Serial.print(leftMotorSpeedTarget);
 
-  Serial.print(" Right ");
-  Serial.println(rightMotorSpeedTarget);
+  // Serial.print(" Right ");
+  // Serial.println(rightMotorSpeedTarget);
 
   motor_L.setSpeed(leftMotorSpeedTarget);
   motor_R.setSpeed(rightMotorSpeedTarget);
