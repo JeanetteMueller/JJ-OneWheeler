@@ -1,5 +1,5 @@
 
-int16_t accY, accZ, gyroX;
+int16_t accX, accY, accZ, gyroX;
 int16_t motorPower;
 int16_t gyroRate;
 float accAngle, gyroAngle, currentAngle, prevAngle = 0, error, prevError = 0, errorSum = 0;
@@ -29,13 +29,14 @@ void setupGyro() {
   mpu.initialize();
 
   //-3970	-3783	1632	121	88	38
+  //-4007	-3645	1553	123	84	36
 
-  mpu.setXAccelOffset(-3970);
-  mpu.setYAccelOffset(-3783);
-  mpu.setZAccelOffset(1632);
-  mpu.setXGyroOffset(121);
-  mpu.setYGyroOffset(88);
-  mpu.setZGyroOffset(38);
+  mpu.setXAccelOffset(-4007);
+  mpu.setYAccelOffset(-3645);
+  mpu.setZAccelOffset(1553);
+  mpu.setXGyroOffset(123);
+  mpu.setYGyroOffset(84);
+  mpu.setZGyroOffset(36);
 }
 
 void loopGyro() {
@@ -50,9 +51,19 @@ void loopGyro() {
   lastMicros = us;
   sampleTime = timediffUS / 1000000.0;
 
+  accX = mpu.getAccelerationX();
   accY = mpu.getAccelerationY();
   accZ = mpu.getAccelerationZ();
-  gyroX = mpu.getRotationX(); // war zuletzt Y
+
+  gyroX = mpu.getRotationX();
+
+  // Serial.print("acc x: ");
+  // Serial.print(accX);
+  // Serial.print("    y: ");
+  // Serial.print(accY);
+  // Serial.print("    z: ");
+  // Serial.print(accZ);
+  // Serial.println("");
 
   if (fabs(accZ) > 0.001) {
     accAngle = atan2(accY, accZ) * RAD_TO_DEG;
@@ -81,8 +92,11 @@ void loopGyro() {
 
   prevAngle = currentAngle;
 
-  leftMotorSpeedTarget += -(motorPower);
-  rightMotorSpeedTarget += -(motorPower);
-
+  if (accX > 4000 || accX < -4000) {
+    Serial.println("to far tiltet -> motor stop");
+  } else {
+    leftMotorSpeedTarget += -(motorPower);
+    rightMotorSpeedTarget += -(motorPower);
+  }
   //Serial.println("Gyro loop end");
 }

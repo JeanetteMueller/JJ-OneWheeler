@@ -28,11 +28,11 @@ void loopHeadServo() {
 
     servoPosition = constrain(servoPosition, minHeadServo, maxHeadServo);
 
-    Serial.print(F(" headServoTarget: "));
-    Serial.print(headServoTarget);
+    // Serial.print(F(" headServoTarget: "));
+    // Serial.print(headServoTarget);
 
-    Serial.print(F("     Head Servo: "));
-    Serial.println(servoPosition);
+    // Serial.print(F("     Head Servo: "));
+    // Serial.println(servoPosition);
 
     headServo.write(servoPosition);
 
