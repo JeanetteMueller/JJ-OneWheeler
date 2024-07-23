@@ -97,6 +97,7 @@ void loopGyro() {
   } else {
     leftMotorSpeedTarget += -(motorPower);
     rightMotorSpeedTarget += -(motorPower);
+    gyroServoPosition = map(motorPower, (-255), 255, minHeadServo, maxHeadServo);
   }
   //Serial.println("Gyro loop end");
 }

@@ -22,7 +22,7 @@ void loopInput() {
   if (IBus->cnt_rec > 0) {
     ibusVar00 = IBus->readChannel(RC_STICK_RIGHT_H);     // Steer
     ibusVar01 = IBus->readChannel(RC_STICK_RIGHT_V);     // Drive
-    ibusVar02 = IBus->readChannel(RC_STICK_LEFT_V);      //
+    ibusVar02 = IBus->readChannel(RC_STICK_LEFT_V);      // Dome vor und zurück
     ibusVar03 = IBus->readChannel(RC_STICK_LEFT_H);      // Dome drehen
     ibusVar04 = IBus->readChannel(RC_TURN_LEFT);         // (drehregler links)
     ibusVar05 = IBus->readChannel(RC_TURN_RIGHT);        // (drehregler rechts)
@@ -35,6 +35,6 @@ void loopInput() {
     driveValueHorizontal = ibusVar00;
     driveValueVertical = ibusVar01;
 
-    headServoTarget = ibusVar01;
+    headServoTarget = ibusVar02;
   }
 }

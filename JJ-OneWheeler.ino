@@ -4,10 +4,11 @@
 
 #include "definitions.h"
 #include "input.h"
+#include "headServo.h"
 #include "gyro.h"
 #include "debug.h"
 #include "drive.h"
-#include "headServo.h"
+
 
 void setup() {
   // put your setup code here, to run once:
@@ -34,8 +35,6 @@ void loop() {
   if (currentMillis < previousMillis_headServo) {
     previousMillis_headServo = 0;
   }
-
-  
 
   if (currentMillis < previousMillis_gyro) {
     previousMillis_gyro = 0;
