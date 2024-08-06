@@ -1,7 +1,6 @@
+#include "Arduino.h"
 
 void setupDrive() {
-
-  analogWriteFreq(18000);
 
   motor_L.setSpeed(0);
   motor_R.setSpeed(0);
@@ -13,45 +12,42 @@ void initLoopDrive() {
 }
 
 void loopDrive() {
-  uint16_t deadPoint = 5;
-  uint16_t minValue = 1000;
-  uint16_t maxValue = 2000;
+  uint16_t deadPoint = 0;
+  uint16_t minValue = 1100;
+  uint16_t maxValue = 1900;
   uint16_t centerPoint = 1500;
 
-  int16_t maxSpeedValue = 255;
-
-  if (driveValueVertical >= minValue && driveValueVertical <= maxValue) {
+  if (driveValueVertical >= 1000 && driveValueVertical <= 2000) {
 
     if (driveValueVertical < centerPoint - deadPoint || driveValueVertical > centerPoint + deadPoint) {
-      joystickY = map(driveValueVertical, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
+      joystickY = map(driveValueVertical, minValue, maxValue, -maxSpeedValue, maxSpeedValue);
+      joystickY = constrain(joystickY, -maxSpeedValue, maxSpeedValue);
 
       leftMotorSpeedTarget += joystickY;
       rightMotorSpeedTarget += joystickY;
     }
   }
-  if (driveValueHorizontal >= minValue && driveValueHorizontal <= maxValue) {
+  if (driveValueHorizontal >= 1000 && driveValueHorizontal <= 2000) {
     if (driveValueHorizontal < centerPoint - deadPoint || driveValueHorizontal > centerPoint + deadPoint) {
-      joystickX = map(driveValueHorizontal, minValue, maxValue, maxSpeedValue, -(maxSpeedValue));
+      joystickX = map(driveValueHorizontal, minValue, maxValue, -maxSpeedValue, maxSpeedValue);
+      joystickX = constrain(joystickX, -maxSpeedValue, maxSpeedValue);
 
       leftMotorSpeedTarget += joystickX;
       rightMotorSpeedTarget -= joystickX;
     }
   }
-  leftMotorSpeedTarget = constrain(leftMotorSpeedTarget, -255, 255);
-  rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -255, 255);
 }
 
 void updateDriveSpeed() {
 
-  leftMotorSpeedTarget = constrain(leftMotorSpeedTarget, -255, 255);
-  rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -255, 255);
+  leftMotorSpeedTarget = constrain(leftMotorSpeedTarget, -maxSpeedValue, maxSpeedValue);
+  rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -maxSpeedValue, maxSpeedValue);
 
-  // Serial.print("Motors: ");
-  // Serial.print(" Left ");
-  // Serial.print(leftMotorSpeedTarget);
-
-  // Serial.print(" Right ");
-  // Serial.println(rightMotorSpeedTarget);
+  Serial.print(" Motors: ");
+  Serial.print(" Left  ");
+  Serial.print(leftMotorSpeedTarget);
+  Serial.print("      Right ");
+  Serial.println(rightMotorSpeedTarget);
 
   motor_L.setSpeed(leftMotorSpeedTarget);
   motor_R.setSpeed(rightMotorSpeedTarget);

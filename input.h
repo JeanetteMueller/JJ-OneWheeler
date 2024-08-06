@@ -12,7 +12,7 @@
 
 void setupInput() {
 
-  IBus->begin(Serial, IBUSBM_NOTIMER);
+  IBus->begin(Serial2, IBUSBM_NOTIMER);
 }
 
 void loopInput() {
@@ -36,5 +36,6 @@ void loopInput() {
     driveValueVertical = ibusVar01;
 
     headServoTarget = ibusVar02;
+    headMotorTarget = ibusVar03;
   }
 }

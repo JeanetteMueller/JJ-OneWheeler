@@ -1,6 +1,7 @@
+#include "Arduino.h"
 
 int16_t accX, accY, accZ, gyroX;
-int16_t motorPower;
+int32_t motorPower;
 int16_t gyroRate;
 float accAngle, gyroAngle, currentAngle, prevAngle = 0, error, prevError = 0, errorSum = 0;
 int16_t count = 0;
@@ -26,6 +27,7 @@ unsigned long lastMicros = 0;
 #define Ki 0.02  // 5.0
 
 void setupGyro() {
+
   mpu.initialize();
 
   //-3970	-3783	1632	121	88	38
@@ -68,7 +70,7 @@ void loopGyro() {
   if (fabs(accZ) > 0.001) {
     accAngle = atan2(accY, accZ) * RAD_TO_DEG;
   }
-  gyroRate = map(gyroX, -32768, 32767, -250, 250);
+  gyroRate = map(gyroX, -32768, 32767, -1000, 1000);
 
   gyroAngle = (float)gyroRate * sampleTime;
   currentAngle = 0.9934 * (prevAngle + gyroAngle) + 0.0066 * (accAngle);
@@ -78,26 +80,36 @@ void loopGyro() {
   //calculate output from P, I and D values
 
   motorPower = Kp * (error) + Ki * (errorSum)*sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
-  motorPower = constrain(motorPower, -255, 255);
+  
+  motorPower = constrain(motorPower, -maxSpeedValue, maxSpeedValue);
 
-  int16_t minValue = 20;  //value 0-x is not powerfull enough to rotate so this is the minimum value
+  prevAngle = currentAngle;
 
-  if (motorPower > 2) {
-    motorPower = map(motorPower, 2, 255, minValue, 255);
-  } else if (motorPower < -2) {
-    motorPower = map(motorPower, -2, -255, -(minValue), -255);
-  } else {
+  // Serial.print(" motorPower2  ");
+  // Serial.print(motorPower);
+
+  // int16_t minValue = 20;  //value 0-x is not powerfull enough to rotate so this is the minimum value
+  // if (motorPower > 2) {
+  //   motorPower = map(motorPower, 2, maxSpeedValue, minValue, maxSpeedValue);
+  // } else if (motorPower < -2) {
+  //   motorPower = map(motorPower, -2, -maxSpeedValue, -(minValue), -maxSpeedValue);
+  // } else {
+  //   motorPower = 0;
+  // }
+
+  if (motorPower < 10 && motorPower > -10) {
     motorPower = 0;
   }
 
-  prevAngle = currentAngle;
+  // Serial.print(" motorPower3  ");
+  // Serial.print(motorPower);
 
   if (accX > 4000 || accX < -4000) {
     Serial.println("to far tiltet -> motor stop");
   } else {
-    leftMotorSpeedTarget += -(motorPower);
-    rightMotorSpeedTarget += -(motorPower);
-    gyroServoPosition = map(motorPower, (-255), 255, minHeadServo, maxHeadServo);
+    leftMotorSpeedTarget += motorPower;
+    rightMotorSpeedTarget += motorPower;
+    gyroServoPosition = map(motorPower, -maxSpeedValue, maxSpeedValue, minHeadServo, maxHeadServo);
   }
   //Serial.println("Gyro loop end");
 }

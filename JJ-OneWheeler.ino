@@ -1,10 +1,14 @@
 
+#include "Arduino.h"
+
 #include "Wire.h"
 #include "math.h"
 
 #include "definitions.h"
 #include "input.h"
 #include "headServo.h"
+#include "headMotor.h"
+#include "lights.h"
 #include "gyro.h"
 #include "debug.h"
 #include "drive.h"
@@ -22,10 +26,13 @@ void setup() {
   setupGyro();
   setupDrive();
   setupHeadServo();
+  setupHeadMotor();
+  setupLights();
 }
 
 void loop() {
   // Serial.println("loop start--------------------------");
+
   currentMillis = millis();
 
   if (currentMillis < previousMillis_100) {
@@ -40,20 +47,23 @@ void loop() {
     previousMillis_gyro = 0;
   }
 
-  initLoopDrive();
+  if (currentMillis < previousMillis_second) {
+    previousMillis_second = 0;
+  }
 
   loopInput();
-
-  loopDrive();
-
-  // debug();
 
   if (currentMillis - previousMillis_gyro >= 2) {
     previousMillis_gyro = currentMillis;
 
+    initLoopDrive();
+    loopDrive();
     loopGyro();
     updateDriveSpeed();
+
+    loopHeadMotor();
   }
+  
 
   if (currentMillis - previousMillis_headServo >= 20) {
     previousMillis_headServo = currentMillis;
@@ -64,7 +74,19 @@ void loop() {
   if (currentMillis - previousMillis_100 >= 100) {
     previousMillis_100 = currentMillis;
 
+    loopLights();
+  }
+
+if (currentMillis - previousMillis_second >= 1000) {
+    previousMillis_second = currentMillis;
+
+    // debug();
+
+    // Serial.print("-------------------------- loop end at ");
+    // Serial.println(currentMillis / 1000);
   }
 
   // Serial.println("loop end--------------------------");
+
+  Serial.println("");
 }
