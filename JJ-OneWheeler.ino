@@ -73,10 +73,11 @@ void loop() {
     loopDrive();
     loopGyro();
     updateDriveSpeed();
-
-    loopHeadMotor();
   }
   
+  
+
+  loopHeadMotor();
 
   if (currentMillis - previousMillis_headServo >= 20) {
     previousMillis_headServo = currentMillis;
@@ -101,13 +102,11 @@ if (currentMillis - previousMillis_second >= 1000) {
 
   // Serial.println("loop end--------------------------");
 
-  unsigned long endTime = millis();
-
-
-  if (endTime > currentMillis+4) {
-    Serial.print(" WARN !!!!!!!!!!!!!!!!!!!!!!!!!! ");
-    Serial.print(endTime - currentMillis);
-    Serial.println("");
-  }
-  
+  // unsigned long endTime = millis();
+  // if (endTime > currentMillis+4) {
+  //   Serial.print(" WARN !!!!!!!!!!!!!!!!!!!!!!!!!! ");
+  //   Serial.print(endTime - currentMillis);
+  //   Serial.println("");
+  // }
+  Serial.println("");
 }

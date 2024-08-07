@@ -8,21 +8,21 @@ unsigned long previousMillis_gyro = 0;
 unsigned long previousMillis_second = 0;
 
 // Gyro
-#include "LSM6DSOXSensor.h"
-LSM6DSOXSensor lsm6dsoxSensor = LSM6DSOXSensor(&Wire, LSM6DSOX_I2C_ADD_L);
-int16_t targetAngle = 24.0;
+#include "ISM330DHCXSensor.h"
+ISM330DHCXSensor gyro = ISM330DHCXSensor(&Wire, ISM330DHCX_I2C_ADD_L);
+int16_t targetAngle = 21.0;
 
 // Head Servo
 #include <ESP32Servo.h>
 Servo headServo;
 uint8_t headServoPin = 12;
 int16_t headServoTarget = 1500;
-int16_t servoPosition = 0;
-int16_t gyroServoPosition = 0;
 uint16_t minHeadServo = 1;
 uint16_t maxHeadServo = 199;
+uint16_t servoCenterPosition = ((maxHeadServo - minHeadServo) / 2) + minHeadServo;
+int16_t servoPosition = servoCenterPosition;
+int16_t gyroServoPosition = 0;
 uint16_t joystickHeadMovementAmount = 60;  //100 is max
-int16_t usedRange = 300;
 
 
 // RC Reviever
@@ -78,3 +78,6 @@ uint32_t colorOff = neoPixelLights.Color(0, 0, 0);
 uint32_t colorRed = neoPixelLights.Color(255, 0, 0);
 uint32_t colorGreen = neoPixelLights.Color(0, 255, 0);
 uint32_t colorBlue = neoPixelLights.Color(0, 0, 255);
+uint32_t colorYellow = neoPixelLights.Color(255, 255, 0);
+
+bool gyroIsReady = false;

@@ -40,14 +40,19 @@ void loopDrive() {
 
 void updateDriveSpeed() {
 
+  if (gyroIsReady) {
+    leftMotorSpeedTarget += motorPower;
+    rightMotorSpeedTarget += motorPower;
+  }
+
   leftMotorSpeedTarget = constrain(leftMotorSpeedTarget, -maxSpeedValue, maxSpeedValue);
   rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -maxSpeedValue, maxSpeedValue);
 
-  // Serial.print(" Motors: ");
-  // Serial.print(" Left  ");
-  // Serial.print(leftMotorSpeedTarget);
-  // Serial.print("      Right ");
-  // Serial.print(rightMotorSpeedTarget);
+  Serial.print("      Motors: ");
+  Serial.print(" Left  ");
+  Serial.print(leftMotorSpeedTarget);
+  // Serial.print("    Right ");
+  // Serial.println(rightMotorSpeedTarget);
 
   motor_L.setSpeed(leftMotorSpeedTarget);
   motor_R.setSpeed(rightMotorSpeedTarget);

@@ -4,8 +4,6 @@ int16_t accX, accY, accZ, gyroX;
 int32_t motorPower;
 int16_t gyroRate;
 float accAngle, gyroAngle, currentAngle, prevAngle = 0, error, prevError = 0, errorSum = 0;
-int16_t count = 0;
-
 float sampleTime;
 unsigned long lastMicros = 0;
 
@@ -22,57 +20,41 @@ unsigned long lastMicros = 0;
 // #define Kd 0
 // #define Ki 1.5 // 5.0
 
-#define Kp 5.0  //1.5
-#define Kd 0
+#define Kp 1.5  //1.5
+#define Kd 0.0
 #define Ki 0.02  // 5.0
 
 void setupGyro() {
 
-  lsm6dsoxSensor.begin();
+  gyro.begin();
 
-  // Enable accelerometer and gyroscope, and check success
-  if (lsm6dsoxSensor.Enable_X() == LSM6DSOX_OK && lsm6dsoxSensor.Enable_G() == LSM6DSOX_OK) {
-    Serial.println("Success enabling accelero and gyro");
-  } else {
-    Serial.println("Error enabling accelero and gyro");
-  }
+  gyro.ACC_Enable();
+  gyro.GYRO_Enable();
 
-  // Read ID of device and check that it is correct
-  uint8_t id;
-  lsm6dsoxSensor.ReadID(&id);
-  if (id != LSM6DSOX_ID) {
-    Serial.println("Wrong ID for LSM6DSOX sensor. Check that device is plugged");
-  } else {
-    Serial.println("Receviced correct ID for LSM6DSOX sensor");
-  }
+  // // Enable accelerometer and gyroscope, and check success
+  // if (gyro.ACC_Enable() == ISM330DHCX_OK && gyro.GYRO_Enable() == LSM6DSOX_OK) {
+  //   Serial.println("Success enabling accelero and gyro");
+  // } else {
+  //   Serial.println("Error enabling accelero and gyro");
+  // }
 
-  // Set accelerometer scale at +- 2G. Available values are +- 2, 4, 8, 16 G
-  lsm6dsoxSensor.Set_X_FS(2);
-
-  // Set gyroscope scale at +- 125 degres per second. Available values are +- 125, 250, 500, 1000, 2000 dps
-  lsm6dsoxSensor.Set_G_FS(125);
-
-
-  // Set Accelerometer sample rate to 208 Hz. Available values are +- 12.0, 26.0, 52.0, 104.0, 208.0, 416.0, 833.0, 1667.0, 3333.0, 6667.0 Hz
-  lsm6dsoxSensor.Set_X_ODR(208.0f);
-
-
-  // Set Gyroscope sample rate to 208 Hz. Available values are +- 12.0, 26.0, 52.0, 104.0, 208.0, 416.0, 833.0, 1667.0, 3333.0, 6667.0 Hz
-  lsm6dsoxSensor.Set_G_ODR(208.0f);
-
+  // // Read ID of device and check that it is correct
+  // uint8_t id;
+  // gyro.ReadID(&id);
+  // if (id != LSM6DSOX_ID) {
+  //   Serial.println("Wrong ID for LSM6DSOX sensor. Check that device is plugged");
+  // } else {
+  //   Serial.println("Receviced correct ID for LSM6DSOX sensor");
+  // }
 }
 
 void loopGyro() {
 
-  if (currentMillis < 5000) {
-    return;
-  }
-
   int32_t accelerometer[3];
   int32_t gyroscope[3];
 
-  lsm6dsoxSensor.Get_X_Axes(accelerometer);
-  lsm6dsoxSensor.Get_G_Axes(gyroscope);
+  gyro.ACC_GetAxes(accelerometer);
+  gyro.GYRO_GetAxes(gyroscope);
 
   accX = accelerometer[0];
   accY = accelerometer[1];
@@ -91,35 +73,43 @@ void loopGyro() {
   sampleTime = timediffUS / 1000000.0;
 
 
-
   if (fabs(accZ) > 0.001) {
     accAngle = atan2(accY, accZ) * RAD_TO_DEG;
   }
-  gyroRate = map(gyroX, -32768, 32767, -1000, 1000);
+  gyroRate = map(gyroX, -32768, 32767, -250, 250);
 
   gyroAngle = (float)gyroRate * sampleTime;
   currentAngle = 0.9934 * (prevAngle + gyroAngle) + 0.0066 * (accAngle);
 
-  // Serial.print(" acc x: ");
-  // Serial.print(accX);
-  // Serial.print("    y: ");
-  // Serial.print(accY);
-  // Serial.print("    z: ");
-  // Serial.print(accZ);
+  Serial.print(" acc x: ");
+  Serial.print(accX);
+  Serial.print("    y: ");
+  Serial.print(accY);
+  Serial.print("    z: ");
+  Serial.print(accZ);
 
-  // Serial.print("   gyro x: ");
-  // Serial.print(gyroX);
-  // Serial.print("    currentAngle: ");
-  // Serial.print(currentAngle);
+  Serial.print("   gyro x: ");
+  Serial.print(gyroX);
+  Serial.print("    currentAngle: ");
+  Serial.print(currentAngle);
 
   error = currentAngle - targetAngle;
   errorSum = errorSum + error;
+  Serial.print("       errorSum: ");
+  Serial.print(errorSum);
+
   errorSum = constrain(errorSum, -300, 300);
   //calculate output from P, I and D values
 
-  motorPower = Kp * (error) + Ki * (errorSum)*sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
+  motorPower = Kp * (error) + Ki * (errorSum) * sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
+  Serial.print("       motorPower: ");
+  Serial.print(motorPower);
 
+  motorPower = map(motorPower, -255, 255, -800, 800);
   motorPower = constrain(motorPower, -maxSpeedValue, maxSpeedValue);
+
+  Serial.print(" > ");
+  Serial.print(motorPower);
 
   prevAngle = currentAngle;
 
@@ -136,15 +126,16 @@ void loopGyro() {
     motorPower = 0;
   }
 
-  // Serial.print(".   gyro motorpower  ");
-  // Serial.println(motorPower);
-
-  if (accX > 300 || accX < -300) {
+  if (accX > 200 || accX < -200) {
     Serial.println("to far tiltet -> motor stop --------------------------");
+    motorPower = 0;
   } else {
-    leftMotorSpeedTarget += motorPower;
-    rightMotorSpeedTarget += motorPower;
-    gyroServoPosition = map(motorPower, -maxSpeedValue, maxSpeedValue, minHeadServo, maxHeadServo);
+
+    if (currentMillis > 7000) {
+      gyroIsReady = true;
+      
+      // gyroServoPosition = map(motorPower, -maxSpeedValue, maxSpeedValue, -joystickHeadMovementAmount, joystickHeadMovementAmount);
+    }
   }
   //Serial.println("Gyro loop end");
 }

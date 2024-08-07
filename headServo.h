@@ -11,17 +11,15 @@ void setupHeadServo() {
 
 void loopHeadServo() {
 
-  servoPosition = gyroServoPosition;
+  servoPosition = servoCenterPosition;
+
+  servoPosition += gyroServoPosition;
 
   if (headServoTarget >= 1000 && headServoTarget <= 2000) {
     servoPosition += map(headServoTarget, 1000, 2000, joystickHeadMovementAmount, -joystickHeadMovementAmount);
   }
 
-  if (servoPosition != 0) {
-    servoPosition = constrain(servoPosition, minHeadServo, maxHeadServo);
-  } else {
-    servoPosition = ((maxHeadServo - minHeadServo) / 2) + minHeadServo;
-  }
+  servoPosition = constrain(servoPosition, minHeadServo, maxHeadServo);
 
   // Serial.print(F(" headServoTarget: "));
   // Serial.print(headServoTarget);

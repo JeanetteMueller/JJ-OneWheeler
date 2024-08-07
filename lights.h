@@ -7,14 +7,18 @@ void setupLights() {
 
 void loopLights() {
 
-  neoPixelLights.setPixelColor(0, colorOff);
-  neoPixelLights.setPixelColor(1, colorOff);
-  neoPixelLights.setPixelColor(2, colorOff);
+  if (gyroIsReady) {
 
-  neoPixelLights.setPixelColor(3, colorOff);
-  neoPixelLights.setPixelColor(4, colorOff);
-  neoPixelLights.setPixelColor(5, colorOff);
-  neoPixelLights.setPixelColor(6, colorRed);
+    for (uint16_t i = 0; i < ledCount; i++) {
+      neoPixelLights.setPixelColor(i, colorOff);
+    }
+    neoPixelLights.setPixelColor(6, colorRed);
 
+
+  }else{
+    for (uint16_t i = 0; i < ledCount; i++) {
+      neoPixelLights.setPixelColor(i, colorYellow);
+    }
+  }
   neoPixelLights.show();
 }
