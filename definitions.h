@@ -8,10 +8,9 @@ unsigned long previousMillis_gyro = 0;
 unsigned long previousMillis_second = 0;
 
 // Gyro
-#include "I2Cdev.h"
-#include "MPU6050.h"
-MPU6050 mpu(0x68);  // <-- use for AD0 high
-int16_t targetAngle = 0;
+#include "LSM6DSOXSensor.h"
+LSM6DSOXSensor lsm6dsoxSensor = LSM6DSOXSensor(&Wire, LSM6DSOX_I2C_ADD_L);
+int16_t targetAngle = 24.0;
 
 // Head Servo
 #include <ESP32Servo.h>
@@ -53,8 +52,9 @@ uint16_t ibusVar09 = 0;
 uint8_t resolution = 10;
 uint32_t frequency = 20000;
 int32_t maxSpeedValue = (pow(2, resolution) - 1);
-CytronMD motor_L(PWM_DIR, 25, 26, 1, frequency, resolution);
-CytronMD motor_R(PWM_DIR, 32, 33, 2, frequency, resolution);
+
+CytronMD motor_L(PWM_DIR, 32, 33, 2, frequency, resolution);
+CytronMD motor_R(PWM_DIR, 25, 26, 4, frequency, resolution);
 
 int16_t leftMotorSpeedTarget = 0;
 int16_t rightMotorSpeedTarget = 0;
@@ -64,7 +64,7 @@ int16_t joystickX = 0;
 int16_t joystickY = 0;
 
 // Motor Head
-CytronMD motor_Head(PWM_DIR, 27, 14, 3, frequency, resolution);
+CytronMD motor_Head(PWM_DIR, 27, 14, 6, frequency, resolution);
 uint16_t headMotorTarget = 0;
 int16_t headMotorSpeedTarget = 0;
 

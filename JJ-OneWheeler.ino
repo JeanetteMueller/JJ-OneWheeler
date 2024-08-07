@@ -5,6 +5,7 @@
 #include "math.h"
 
 #include "definitions.h"
+
 #include "input.h"
 #include "headServo.h"
 #include "headMotor.h"
@@ -18,6 +19,18 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(SERIAL_PORT_SPEED);  //Used only for debugging on arduino serial monitor
   Serial.println("JJ Arduino Code! v1.0");
+
+  // if (setCpuFrequencyMhz(240)) {
+  //   Serial.println("Set CPU speed to 240 Mhz");
+
+  //   delay(2000);
+  // }
+
+  uint32_t cpuFreq = getCpuFrequencyMhz();
+  Serial.print("CPU speed is ");
+  Serial.print(cpuFreq);
+  Serial.println(" mHz");
+  delay(2000);
 
   // join I2C bus (I2Cdev library doesn't do this automatically)
   Wire.begin();
@@ -88,5 +101,13 @@ if (currentMillis - previousMillis_second >= 1000) {
 
   // Serial.println("loop end--------------------------");
 
-  Serial.println("");
+  unsigned long endTime = millis();
+
+
+  if (endTime > currentMillis+4) {
+    Serial.print(" WARN !!!!!!!!!!!!!!!!!!!!!!!!!! ");
+    Serial.print(endTime - currentMillis);
+    Serial.println("");
+  }
+  
 }
