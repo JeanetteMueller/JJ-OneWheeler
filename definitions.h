@@ -7,12 +7,6 @@ unsigned long previousMillis_headServo = 0;
 unsigned long previousMillis_gyro = 0;
 unsigned long previousMillis_second = 0;
 
-// Gyro
-#include "I2Cdev.h"
-#include "MPU6050.h"
-MPU6050 mpu(0x68);  // <-- use for AD0 high
-int16_t targetAngle = -2.4;
-
 // Head Servo
 #include <ESP32Servo.h>
 Servo headServo;
@@ -81,4 +75,4 @@ uint32_t colorGreen = neoPixelLights.Color(0, 255, 0);
 uint32_t colorBlue = neoPixelLights.Color(0, 0, 255);
 uint32_t colorYellow = neoPixelLights.Color(255, 255, 0);
 
-bool gyroIsReady = false;
+

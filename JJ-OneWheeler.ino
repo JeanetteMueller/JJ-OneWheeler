@@ -5,12 +5,12 @@
 #include "math.h"
 
 #include "definitions.h"
-
+#include "functions.h"
 #include "input.h"
 #include "headServo.h"
 #include "headMotor.h"
-#include "lights.h"
 #include "gyro.h"
+#include "lights.h"
 #include "debug.h"
 #include "drive.h"
 
@@ -20,16 +20,7 @@ void setup() {
   Serial.begin(SERIAL_PORT_SPEED);  //Used only for debugging on arduino serial monitor
   Serial.println("JJ Arduino Code! v1.0");
 
-  // if (setCpuFrequencyMhz(240)) {
-  //   Serial.println("Set CPU speed to 240 Mhz");
-
-  //   delay(2000);
-  // }
-
-  uint32_t cpuFreq = getCpuFrequencyMhz();
-  Serial.print("CPU speed is ");
-  Serial.print(cpuFreq);
-  Serial.println(" mHz");
+  writeCPUFreq();
   delay(2000);
 
   // join I2C bus (I2Cdev library doesn't do this automatically)
