@@ -3,6 +3,11 @@ void setupLights() {
   neoPixelLights.begin();  // INITIALIZE NeoPixel strip object (REQUIRED)
 
   neoPixelLights.setBrightness(100);
+
+  for (uint16_t i = 0; i < ledCount; i++) {
+    neoPixelLights.setPixelColor(i, colorYellow);
+  }
+  neoPixelLights.show();
 }
 
 void loopLights() {

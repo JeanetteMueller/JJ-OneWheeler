@@ -13,8 +13,8 @@ void initLoopDrive() {
 
 void loopDrive() {
   uint16_t deadPoint = 0;
-  uint16_t minValue = 1100;
-  uint16_t maxValue = 1900;
+  uint16_t minValue = 1050;
+  uint16_t maxValue = 1950;
   uint16_t centerPoint = 1500;
 
   if (driveValueVertical >= 1000 && driveValueVertical <= 2000) {

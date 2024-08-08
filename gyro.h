@@ -1,10 +1,8 @@
-#include "Arduino.h"
 
 int16_t accX, accY, accZ, gyroX;
 int32_t motorPower;
 int16_t gyroRate;
-float accAngle, gyroAngle, currentAngle, prevAngle = 0, error, prevError = 0, errorSum = 0;
-float sampleTime;
+float accAngle, gyroAngle, currentAngle, prevAngle = 0, error, prevError = 0, errorSum = 0, sampleTime;
 unsigned long lastMicros = 0;
 
 #define ULONG_MAX 4294967295UL
@@ -20,47 +18,25 @@ unsigned long lastMicros = 0;
 // #define Kd 0
 // #define Ki 1.5 // 5.0
 
-#define Kp 1.5  //1.5
-#define Kd 0.0
+#define Kp 5.0  //1.5
+#define Kd 0
 #define Ki 0.02  // 5.0
 
 void setupGyro() {
+  mpu.initialize();
 
-  gyro.begin();
+  //-3970	-3783	1632	121	88	38
+  //-4007	-3645	1553	123	84	36
 
-  gyro.ACC_Enable();
-  gyro.GYRO_Enable();
-
-  // // Enable accelerometer and gyroscope, and check success
-  // if (gyro.ACC_Enable() == ISM330DHCX_OK && gyro.GYRO_Enable() == LSM6DSOX_OK) {
-  //   Serial.println("Success enabling accelero and gyro");
-  // } else {
-  //   Serial.println("Error enabling accelero and gyro");
-  // }
-
-  // // Read ID of device and check that it is correct
-  // uint8_t id;
-  // gyro.ReadID(&id);
-  // if (id != LSM6DSOX_ID) {
-  //   Serial.println("Wrong ID for LSM6DSOX sensor. Check that device is plugged");
-  // } else {
-  //   Serial.println("Receviced correct ID for LSM6DSOX sensor");
-  // }
+  mpu.setXAccelOffset(-4007);
+  mpu.setYAccelOffset(-3645);
+  mpu.setZAccelOffset(1553);
+  mpu.setXGyroOffset(123);
+  mpu.setYGyroOffset(84);
+  mpu.setZGyroOffset(36);
 }
 
 void loopGyro() {
-
-  int32_t accelerometer[3];
-  int32_t gyroscope[3];
-
-  gyro.ACC_GetAxes(accelerometer);
-  gyro.GYRO_GetAxes(gyroscope);
-
-  accX = accelerometer[0];
-  accY = accelerometer[1];
-  accZ = accelerometer[2];
-
-  gyroX = gyroscope[0];
 
   unsigned long us = micros();
   unsigned long timediffUS;
@@ -72,6 +48,19 @@ void loopGyro() {
   lastMicros = us;
   sampleTime = timediffUS / 1000000.0;
 
+  accX = mpu.getAccelerationX();
+  accY = mpu.getAccelerationY();
+  accZ = mpu.getAccelerationZ();
+
+  gyroX = mpu.getRotationX();
+
+  // Serial.print("acc x: ");
+  // Serial.print(accX);
+  // Serial.print("    y: ");
+  // Serial.print(accY);
+  // Serial.print("    z: ");
+  // Serial.print(accZ);
+  // Serial.println("");
 
   if (fabs(accZ) > 0.001) {
     accAngle = atan2(accY, accZ) * RAD_TO_DEG;
@@ -80,61 +69,42 @@ void loopGyro() {
 
   gyroAngle = (float)gyroRate * sampleTime;
   currentAngle = 0.9934 * (prevAngle + gyroAngle) + 0.0066 * (accAngle);
-
-  Serial.print(" acc x: ");
-  Serial.print(accX);
-  Serial.print("    y: ");
-  Serial.print(accY);
-  Serial.print("    z: ");
-  Serial.print(accZ);
-
-  Serial.print("   gyro x: ");
-  Serial.print(gyroX);
-  Serial.print("    currentAngle: ");
-  Serial.print(currentAngle);
-
   error = currentAngle - targetAngle;
   errorSum = errorSum + error;
-  Serial.print("       errorSum: ");
-  Serial.print(errorSum);
-
   errorSum = constrain(errorSum, -300, 300);
   //calculate output from P, I and D values
 
-  motorPower = Kp * (error) + Ki * (errorSum) * sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
-  Serial.print("       motorPower: ");
-  Serial.print(motorPower);
-
-  motorPower = map(motorPower, -255, 255, -800, 800);
-  motorPower = constrain(motorPower, -maxSpeedValue, maxSpeedValue);
-
-  Serial.print(" > ");
-  Serial.print(motorPower);
+  motorPower = Kp * (error) + Ki * (errorSum)*sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
 
   prevAngle = currentAngle;
 
-  // int16_t minValue = 20;  //value 0-x is not powerfull enough to rotate so this is the minimum value
-  // if (motorPower > 2) {
-  //   motorPower = map(motorPower, 2, maxSpeedValue, minValue, maxSpeedValue);
-  // } else if (motorPower < -2) {
-  //   motorPower = map(motorPower, -2, -maxSpeedValue, -(minValue), -maxSpeedValue);
-  // } else {
-  //   motorPower = 0;
-  // }
+  Serial.print("  currentAngle: ");
+  Serial.print(currentAngle);
 
-  if (motorPower < 10 && motorPower > -10) {
+  motorPower = constrain(motorPower, -255, 255);
+
+  motorPower = map(motorPower, -255, 255, -maxSpeedValue, maxSpeedValue);
+
+  int16_t minValue = 20;  //value 0-x is not powerfull enough to rotate so this is the minimum value
+
+  if (motorPower > 2) {
+    motorPower = map(motorPower, 2, 255, minValue, 255);
+  } else if (motorPower < -2) {
+    motorPower = map(motorPower, -2, -255, -(minValue), -255);
+  } else {
     motorPower = 0;
   }
+  
 
-  if (accX > 200 || accX < -200) {
-    Serial.println("to far tiltet -> motor stop --------------------------");
+  if (accX > 4000 || accX < -4000) {
+    Serial.println("to far tiltet -> motor stop");
     motorPower = 0;
+    gyroIsReady = false;
   } else {
-
-    if (currentMillis > 7000) {
+    if (currentMillis > 3000) {
       gyroIsReady = true;
-      
-      // gyroServoPosition = map(motorPower, -maxSpeedValue, maxSpeedValue, -joystickHeadMovementAmount, joystickHeadMovementAmount);
+
+      gyroServoPosition = map(motorPower, -maxSpeedValue, maxSpeedValue, -joystickHeadMovementAmount, joystickHeadMovementAmount);
     }
   }
   //Serial.println("Gyro loop end");

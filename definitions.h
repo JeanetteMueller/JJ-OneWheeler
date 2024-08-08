@@ -8,9 +8,10 @@ unsigned long previousMillis_gyro = 0;
 unsigned long previousMillis_second = 0;
 
 // Gyro
-#include "ISM330DHCXSensor.h"
-ISM330DHCXSensor gyro = ISM330DHCXSensor(&Wire, ISM330DHCX_I2C_ADD_L);
-int16_t targetAngle = 21.0;
+#include "I2Cdev.h"
+#include "MPU6050.h"
+MPU6050 mpu(0x68);  // <-- use for AD0 high
+int16_t targetAngle = -2.4;
 
 // Head Servo
 #include <ESP32Servo.h>
@@ -22,7 +23,7 @@ uint16_t maxHeadServo = 199;
 uint16_t servoCenterPosition = ((maxHeadServo - minHeadServo) / 2) + minHeadServo;
 int16_t servoPosition = servoCenterPosition;
 int16_t gyroServoPosition = 0;
-uint16_t joystickHeadMovementAmount = 60;  //100 is max
+uint16_t joystickHeadMovementAmount = 80; //100 is max
 
 
 // RC Reviever
