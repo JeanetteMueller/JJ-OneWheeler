@@ -49,5 +49,5 @@ int32_t getMotorPowerWithGyro() {
 }
 
 int16_t getHeadServoPositionGyro(int32_t mp) {
-  return map(mp, -maxSpeedValue, maxSpeedValue, -joystickHeadMovementAmount, joystickHeadMovementAmount);
+  return map(mp, -maxSpeedValue, maxSpeedValue, -gyroHeadMovementAmount, gyroHeadMovementAmount);
 }

@@ -17,8 +17,8 @@ uint16_t maxHeadServo = 199;
 uint16_t servoCenterPosition = ((maxHeadServo - minHeadServo) / 2) + minHeadServo;
 int16_t servoPosition = servoCenterPosition;
 int16_t gyroServoPosition = 0;
+uint16_t gyroHeadMovementAmount = 100; //100 is max
 uint16_t joystickHeadMovementAmount = 80; //100 is max
-
 
 // RC Reviever
 #include <IBusBM.h>
@@ -64,15 +64,12 @@ uint16_t headMotorTarget = 0;
 int16_t headMotorSpeedTarget = 0;
 
 // LEDs
-#include <Adafruit_NeoPixel.h>
-neoPixelType pixelFormat = NEO_GRB + NEO_KHZ800;
-uint8_t lightsPin = 4;
-uint8_t ledCount = 7;
-Adafruit_NeoPixel neoPixelLights(ledCount, lightsPin, pixelFormat);
-uint32_t colorOff = neoPixelLights.Color(0, 0, 0);
-uint32_t colorRed = neoPixelLights.Color(255, 0, 0);
-uint32_t colorGreen = neoPixelLights.Color(0, 255, 0);
-uint32_t colorBlue = neoPixelLights.Color(0, 0, 255);
-uint32_t colorYellow = neoPixelLights.Color(255, 255, 0);
+#include <FastLED.h>
+#define lightsPin 4
+#define barLightsCount 12
+#define eyeLightsCount 3
+uint8_t generalLightsBrightness = 255;
+#define ledCount (barLightsCount * 4 + eyeLightsCount)
+CRGB leds[ledCount];
 
 

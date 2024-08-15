@@ -1,6 +1,4 @@
 
-#include "Arduino.h"
-
 #include "Wire.h"
 #include "math.h"
 
@@ -20,18 +18,15 @@ void setup() {
   Serial.begin(SERIAL_PORT_SPEED);  //Used only for debugging on arduino serial monitor
   Serial.println("JJ Arduino Code! v1.0");
 
-  writeCPUFreq();
-  delay(2000);
-
   // join I2C bus (I2Cdev library doesn't do this automatically)
   Wire.begin();
 
+  setupLights();
   setupInput();
   setupGyro();
   setupDrive();
   setupHeadServo();
   setupHeadMotor();
-  setupLights();
 }
 
 void loop() {
@@ -65,8 +60,6 @@ void loop() {
     loopGyro();
     updateDriveSpeed();
   }
-  
-  
 
   loopHeadMotor();
 
@@ -76,13 +69,14 @@ void loop() {
     loopHeadServo();
   }
 
-  if (currentMillis - previousMillis_100 >= 100) {
+  if (currentMillis - previousMillis_100 >= 50) {
     previousMillis_100 = currentMillis;
 
     loopLights();
   }
 
-if (currentMillis - previousMillis_second >= 1000) {
+
+  if (currentMillis - previousMillis_second >= 1000) {
     previousMillis_second = currentMillis;
 
     // debug();
@@ -99,5 +93,5 @@ if (currentMillis - previousMillis_second >= 1000) {
   //   Serial.print(endTime - currentMillis);
   //   Serial.println("");
   // }
-  Serial.println("");
+  // Serial.println("");
 }

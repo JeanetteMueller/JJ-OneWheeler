@@ -65,7 +65,7 @@ int32_t getMotorPowerWithGyro() {
     Serial.println("to far tiltet -> motor stop");
     gyroIsReady = false;
 
-  } else if (currentMillis > 3000) {
+  } else {
 
     unsigned long us = micros();
     unsigned long timediffUS;
@@ -88,40 +88,32 @@ int32_t getMotorPowerWithGyro() {
     errorSum = errorSum + error;
     errorSum = constrain(errorSum, -300, 300);
     //calculate output from P, I and D values
-
-    newMotorPower = Kp * (error) + Ki * (errorSum)*sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
-
     prevAngle = currentAngle;
 
-    Serial.print("  currentAngle: ");
-    Serial.print(currentAngle);
+    if (currentMillis > 3000) {
+      newMotorPower = Kp * (error) + Ki * (errorSum)*sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
+      newMotorPower = constrain(newMotorPower, -255, 255);
+      newMotorPower = map(newMotorPower, -255, 255, -maxSpeedValue, maxSpeedValue);
 
-    newMotorPower = constrain(newMotorPower, -255, 255);
+      int16_t minValue = 20;  //value 0-x is not powerfull enough to rotate so this is the minimum value
 
-    newMotorPower = map(newMotorPower, -255, 255, -maxSpeedValue, maxSpeedValue);
+      if (newMotorPower > 2) {
+        newMotorPower = map(newMotorPower, 2, 255, minValue, 255);
+      } else if (newMotorPower < -2) {
+        newMotorPower = map(newMotorPower, -2, -255, -(minValue), -255);
+      } else {
+        newMotorPower = 0;
+      }
 
-    int16_t minValue = 20;  //value 0-x is not powerfull enough to rotate so this is the minimum value
-
-    if (newMotorPower > 2) {
-      newMotorPower = map(newMotorPower, 2, 255, minValue, 255);
-    } else if (newMotorPower < -2) {
-      newMotorPower = map(newMotorPower, -2, -255, -(minValue), -255);
+      gyroIsReady = true;
     } else {
-      newMotorPower = 0;
+      gyroIsReady = false;
     }
-
-    gyroIsReady = true;
-
-  } else {
-    gyroIsReady = false;
   }
-  return newMotorPower;
 
-  //Serial.println("Gyro loop end");
+  return newMotorPower;
 }
 
 int16_t getHeadServoPositionGyro(int32_t mp) {
-  return map(mp, -maxSpeedValue, maxSpeedValue, -joystickHeadMovementAmount, joystickHeadMovementAmount);
+  return map(mp * 2, -maxSpeedValue, maxSpeedValue, -gyroHeadMovementAmount, gyroHeadMovementAmount);
 }
-
-
