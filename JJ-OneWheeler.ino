@@ -3,9 +3,12 @@
 #include "math.h"
 
 #include "definitions.h"
+#include "functions.h"
 #include "input.h"
 #include "headServo.h"
+#include "headMotor.h"
 #include "gyro.h"
+#include "lights.h"
 #include "debug.h"
 #include "drive.h"
 
@@ -18,14 +21,17 @@ void setup() {
   // join I2C bus (I2Cdev library doesn't do this automatically)
   Wire.begin();
 
+  setupLights();
   setupInput();
   setupGyro();
   setupDrive();
   setupHeadServo();
+  setupHeadMotor();
 }
 
 void loop() {
   // Serial.println("loop start--------------------------");
+
   currentMillis = millis();
 
   if (currentMillis < previousMillis_100) {
@@ -40,20 +46,22 @@ void loop() {
     previousMillis_gyro = 0;
   }
 
-  initLoopDrive();
+  if (currentMillis < previousMillis_second) {
+    previousMillis_second = 0;
+  }
 
   loopInput();
-
-  loopDrive();
-
-  // debug();
 
   if (currentMillis - previousMillis_gyro >= 2) {
     previousMillis_gyro = currentMillis;
 
+    initLoopDrive();
+    loopDrive();
     loopGyro();
     updateDriveSpeed();
   }
+
+  loopHeadMotor();
 
   if (currentMillis - previousMillis_headServo >= 20) {
     previousMillis_headServo = currentMillis;
@@ -61,10 +69,29 @@ void loop() {
     loopHeadServo();
   }
 
-  if (currentMillis - previousMillis_100 >= 100) {
+  if (currentMillis - previousMillis_100 >= 50) {
     previousMillis_100 = currentMillis;
 
+    loopLights();
+  }
+
+
+  if (currentMillis - previousMillis_second >= 1000) {
+    previousMillis_second = currentMillis;
+
+    // debug();
+
+    // Serial.print("-------------------------- loop end at ");
+    // Serial.println(currentMillis / 1000);
   }
 
   // Serial.println("loop end--------------------------");
+
+  // unsigned long endTime = millis();
+  // if (endTime > currentMillis+4) {
+  //   Serial.print(" WARN !!!!!!!!!!!!!!!!!!!!!!!!!! ");
+  //   Serial.print(endTime - currentMillis);
+  //   Serial.println("");
+  // }
+  // Serial.println("");
 }
