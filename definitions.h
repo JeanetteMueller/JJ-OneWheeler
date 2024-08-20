@@ -18,7 +18,7 @@ uint16_t servoCenterPosition = ((maxHeadServo - minHeadServo) / 2) + minHeadServ
 int16_t servoPosition = servoCenterPosition;
 int16_t gyroServoPosition = 0;
 uint16_t gyroHeadMovementAmount = 100; //100 is max
-uint16_t joystickHeadMovementAmount = 80; //100 is max
+uint16_t joystickHeadMovementAmount = 100; //100 is max
 
 // RC Reviever
 #include <IBusBM.h>

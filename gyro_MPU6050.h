@@ -1,3 +1,4 @@
+#include "HardwareSerial.h"
 
 // Gyro
 #include "I2Cdev.h"
@@ -5,12 +6,15 @@
 MPU6050 mpu(0x68);  // <-- use for AD0 high
 
 int16_t targetAngle = -2.4;
-uint16_t emergencyStopTiltValue = 4000;
 
 
 int16_t gyroRate;
 float accAngle, gyroAngle, currentAngle, prevAngle = 0, error, prevError = 0, errorSum = 0, sampleTime;
 unsigned long lastMicros = 0;
+unsigned long us;
+unsigned long timediffUS;
+
+int32_t originalMotorSpeed = 0;
 
 // #define ULONG_MAX 4294967295UL
 
@@ -46,29 +50,40 @@ void setupThisGyro() {
 int32_t getMotorPowerWithGyro() {
 
   int32_t newMotorPower = 0;
+  originalMotorSpeed = 0;
 
   accX = mpu.getAccelerationX();
   accY = mpu.getAccelerationY();
   accZ = mpu.getAccelerationZ();
 
   gyroX = mpu.getRotationX();
+  gyroY = mpu.getRotationY();
+  gyroZ = mpu.getRotationZ();
 
-  // Serial.print("acc x: ");
-  // Serial.print(accX);
-  // Serial.print("    y: ");
-  // Serial.print(accY);
-  // Serial.print("    z: ");
-  // Serial.print(accZ);
-  // Serial.println("");
-
-  if (accX > emergencyStopTiltValue || accX < -emergencyStopTiltValue) {
-    Serial.println("to far tiltet -> motor stop");
+  if ((accX > 11000 || accX < -11000) && accY < 1200 ) {
+    Serial.println("to far tiltet -> motor stop ");
     gyroIsReady = false;
 
   } else {
 
-    unsigned long us = micros();
-    unsigned long timediffUS;
+    // Serial.print("acc x: ");
+    // Serial.print(accX);
+    // Serial.print("    y: ");
+    // Serial.print(accY);
+    // Serial.print("    z: ");
+    // Serial.print(accZ);
+
+    // Serial.print("        gyro x: ");
+    // Serial.print(gyroX);
+    // Serial.print("    y: ");
+    // Serial.print(gyroY);
+    // Serial.print("    z: ");
+    // Serial.print(gyroZ);
+
+    // Serial.println("");
+
+    us = micros();
+    
     if (us < lastMicros) {
       timediffUS = (ULONG_MAX - lastMicros) + us;
     } else {
@@ -92,17 +107,32 @@ int32_t getMotorPowerWithGyro() {
 
     if (currentMillis > 3000) {
       newMotorPower = Kp * (error) + Ki * (errorSum)*sampleTime - Kd * (currentAngle - prevAngle) / sampleTime;
+
+      originalMotorSpeed = newMotorPower;
+
+      newMotorPower = newMotorPower * 2;
+
       newMotorPower = constrain(newMotorPower, -255, 255);
-      newMotorPower = map(newMotorPower, -255, 255, -maxSpeedValue, maxSpeedValue);
 
-      int16_t minValue = 20;  //value 0-x is not powerfull enough to rotate so this is the minimum value
+      int16_t minValue = 30;  //value 0-x is not powerfull enough to rotate so this is the minimum value
+      int16_t deadpoint = 10;
 
-      if (newMotorPower > 2) {
-        newMotorPower = map(newMotorPower, 2, 255, minValue, 255);
-      } else if (newMotorPower < -2) {
-        newMotorPower = map(newMotorPower, -2, -255, -(minValue), -255);
+      if (newMotorPower > deadpoint) {
+        newMotorPower = map(newMotorPower, deadpoint, 255, minValue, 255);
+      } else if (newMotorPower < -deadpoint) {
+        newMotorPower = map(newMotorPower, -deadpoint, -255, -(minValue), -255);
       } else {
         newMotorPower = 0;
+        originalMotorSpeed = 0;
+      }
+
+      if (newMotorPower != 0) {
+        newMotorPower = map(newMotorPower, -255, 255, -maxSpeedValue, maxSpeedValue);
+
+        // Serial.print("newMotorPower: ");
+        // Serial.print(originalMotorSpeed);
+        // Serial.print("         ");
+        // Serial.println(newMotorPower);
       }
 
       gyroIsReady = true;
@@ -115,5 +145,5 @@ int32_t getMotorPowerWithGyro() {
 }
 
 int16_t getHeadServoPositionGyro(int32_t mp) {
-  return map(mp * 2, -maxSpeedValue, maxSpeedValue, -gyroHeadMovementAmount, gyroHeadMovementAmount);
+  return map(originalMotorSpeed * 2, -maxSpeedValue, maxSpeedValue, -gyroHeadMovementAmount, gyroHeadMovementAmount);
 }

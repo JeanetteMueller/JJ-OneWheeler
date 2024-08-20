@@ -16,7 +16,7 @@
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(SERIAL_PORT_SPEED);  //Used only for debugging on arduino serial monitor
-  Serial.println("JJ Arduino Code! v1.0");
+  Serial.println("JJ Arduino Code! v1.1");
 
   // join I2C bus (I2Cdev library doesn't do this automatically)
   Wire.begin();
