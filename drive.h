@@ -8,10 +8,12 @@ void setupDrive() {
 void initLoopDrive() {
   leftMotorSpeedTarget = 0;
   rightMotorSpeedTarget = 0;
+  joystickX = 0;
+  joystickY = 0;
 }
 
 void loopDrive() {
-  uint16_t deadPoint = 0;
+  uint16_t deadPoint = 5;
   uint16_t minValue = 1050;
   uint16_t maxValue = 1950;
   uint16_t centerPoint = 1500;
@@ -20,7 +22,6 @@ void loopDrive() {
 
     if (driveValueVertical < centerPoint - deadPoint || driveValueVertical > centerPoint + deadPoint) {
       joystickY = map(driveValueVertical, minValue, maxValue, -maxSpeedValue, maxSpeedValue);
-      joystickY = constrain(joystickY, -maxSpeedValue, maxSpeedValue);
 
       leftMotorSpeedTarget += joystickY;
       rightMotorSpeedTarget += joystickY;
@@ -29,10 +30,9 @@ void loopDrive() {
   if (driveValueHorizontal >= 1000 && driveValueHorizontal <= 2000) {
     if (driveValueHorizontal < centerPoint - deadPoint || driveValueHorizontal > centerPoint + deadPoint) {
       joystickX = map(driveValueHorizontal, minValue, maxValue, -maxSpeedValue, maxSpeedValue);
-      joystickX = constrain(joystickX, -maxSpeedValue, maxSpeedValue);
 
-      leftMotorSpeedTarget += joystickX;
-      rightMotorSpeedTarget -= joystickX;
+      leftMotorSpeedTarget += joystickX * 0.75;
+      rightMotorSpeedTarget -= joystickX * 0.75;
     }
   }
 }
@@ -40,6 +40,10 @@ void loopDrive() {
 void updateDriveSpeed() {
 
   if (gyroIsReady) {
+
+    // Serial.print("    motorPower: ");
+    // Serial.print(motorPower);
+
     leftMotorSpeedTarget += motorPower;
     rightMotorSpeedTarget += motorPower;
   }
@@ -48,7 +52,8 @@ void updateDriveSpeed() {
   rightMotorSpeedTarget = constrain(rightMotorSpeedTarget, -maxSpeedValue, maxSpeedValue);
 
   // Serial.print("      Motors: ");
-  // Serial.print(" Left  ");
+
+  // Serial.print("       Left  ");
   // Serial.print(leftMotorSpeedTarget);
   // Serial.print("    Right ");
   // Serial.println(rightMotorSpeedTarget);

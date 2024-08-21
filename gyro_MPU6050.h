@@ -114,7 +114,7 @@ int32_t getMotorPowerWithGyro() {
 
       newMotorPower = constrain(newMotorPower, -255, 255);
 
-      int16_t minValue = 30;  //value 0-x is not powerfull enough to rotate so this is the minimum value
+      int16_t minValue = 25;  //value 0-x is not powerfull enough to rotate so this is the minimum value
       int16_t deadpoint = 10;
 
       if (newMotorPower > deadpoint) {
@@ -126,13 +126,15 @@ int32_t getMotorPowerWithGyro() {
         originalMotorSpeed = 0;
       }
 
+      
+
       if (newMotorPower != 0) {
         newMotorPower = map(newMotorPower, -255, 255, -maxSpeedValue, maxSpeedValue);
 
         // Serial.print("newMotorPower: ");
         // Serial.print(originalMotorSpeed);
         // Serial.print("         ");
-        // Serial.println(newMotorPower);
+        // Serial.print(newMotorPower);
       }
 
       gyroIsReady = true;
@@ -145,5 +147,5 @@ int32_t getMotorPowerWithGyro() {
 }
 
 int16_t getHeadServoPositionGyro(int32_t mp) {
-  return map(originalMotorSpeed * 2, -maxSpeedValue, maxSpeedValue, -gyroHeadMovementAmount, gyroHeadMovementAmount);
+  return map(originalMotorSpeed * 1.8, -255, 255, -gyroHeadMovementAmount, gyroHeadMovementAmount);
 }

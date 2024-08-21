@@ -46,7 +46,7 @@ uint16_t ibusVar09 = 0;
 
 uint8_t resolution = 10;
 uint32_t frequency = 20000;
-int32_t maxSpeedValue = (pow(2, resolution) - 1);
+int32_t maxSpeedValue = (pow(2, resolution) - 1); //1023
 
 CytronMD motor_L(PWM_DIR, 32, 33, 2, frequency, resolution);
 CytronMD motor_R(PWM_DIR, 25, 26, 4, frequency, resolution);
